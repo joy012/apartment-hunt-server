@@ -34,6 +34,8 @@ client.connect(err => {
     const serviceCollection = client.db("apartmentHunt").collection('service');
     const userBookingCollection = client.db("apartmentHunt").collection('userBooking');
 
+
+    // apartment add and fetch api
     app.get('/apartments', (req, res) => {
         apartmentCollection.find({})
             .toArray((err, documents) => {
@@ -42,21 +44,42 @@ client.connect(err => {
     })
 
     app.post('/addApartment', (req, res) => {
-        const newHouse = req.body;
-        apartmentCollection.insertOne(newHouse)
-            .then(result => {
-                res.send(result.insertedCount > 0);
-            })
+        const file = req.files.file;
+        const service = req.body.name;
+        const price = req.body.price;
+        const location = req.body.address;
+        const bath = req.body.bath;
+        const bed = req.body.bed;
+        const filePath = `${__dirname}/houses/${file.name}`;
+        file.mv(filePath, err => {
+            if (err) {
+                console.log(err);
+            }
+            const newImg = fs.readFileSync(filePath);
+            const encImg = newImg.toString('base64');
+
+            const image = {
+                contentType: req.files.file.mimetype,
+                size: req.files.file.size,
+                img: Buffer.from(encImg, 'base64')
+            }
+            apartmentCollection.insertOne({ service, price, location, bath, bed, image })
+                .then(result => {
+                    fs.remove(filePath, err => {
+                        if (err) {
+                            console.log(err);
+                        }
+                        res.send(result.insertedCount > 0)
+                    })
+                })
+        })
+
     })
 
-    app.get('/service', (req, res) => {
-        serviceCollection.find({})
-            .toArray((err, documents) => {
-                res.send(documents);
-            })
-    })
 
+  
 
+    // all user booking api
     app.post('/addUserBooking', (req, res) => {
         const newBooking = req.body;
         userBookingCollection.insertOne(newBooking)
@@ -92,6 +115,9 @@ client.connect(err => {
         }
     })
 
+
+    
+    // get all bookings and user
     app.get('/allbooking', (req, res) => {
         userBookingCollection.find({})
             .toArray( (err,documents) => {
