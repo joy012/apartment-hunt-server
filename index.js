@@ -47,7 +47,6 @@ client.connect(err => {
 
 
     app.post('/addApartment', (req, res) => {
-        console.log(req)
         const file = req.files.file;
         const service = req.body.name;
         const price = req.body.price;
@@ -85,12 +84,15 @@ client.connect(err => {
 
     // all user booking api
     app.post('/addUserBooking', (req, res) => {
-        const newBooking = req.body;
-        userBookingCollection.insertOne(newBooking)
-            .then(result => {
-                res.send(result.insertedCount > 0);
-            })
-    })
+        const name = req.body.name;
+        const email = req.body.email;
+        const message = req.body.meassage;
+        const phone = req.body.phone;
+            userBookingCollection.insertOne({ name, email, message, phone})
+                .then(result => {
+                        res.send(result.insertedCount > 0)
+                    })
+                })
 
     app.get('/userBooking', (req, res) => {
         const bearer = req.headers.authorization;
