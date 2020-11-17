@@ -9,8 +9,8 @@ const admin = require('firebase-admin');
 var serviceAccount = require("./config/apartment-hunt-team-firebase-adminsdk-za4y6-18c0678c8c.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://apartment-hunt-team.firebaseio.com"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://apartment-hunt-team.firebaseio.com"
 });
 
 
@@ -20,13 +20,15 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const app = express();
 
 app.use(cors());
+app.use(express.static('services'))
+app.use(fileUpload())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const port = 3470;
 
 app.get('/', (req, res) => {
-    res.send('hello');
+    res.send('hello world');
 })
 
 client.connect(err => {
@@ -43,7 +45,18 @@ client.connect(err => {
             })
     })
 
+    app.get('/getApartment', (req, res) => {
+        const houseId = req.query._id;
+        userBookingCollection.find({ _id: houseId })
+            .toArray((err, documents) => {
+                res.status(200).send(documents);
+
+            })
+    })
+
+
     app.post('/addApartment', (req, res) => {
+        console.log(req)
         const file = req.files.file;
         const service = req.body.name;
         const price = req.body.price;
@@ -77,7 +90,7 @@ client.connect(err => {
     })
 
 
-  
+
 
     // all user booking api
     app.post('/addUserBooking', (req, res) => {
@@ -97,36 +110,35 @@ client.connect(err => {
                     const tokenEmail = decodedToken.email;
                     const queryEmail = req.query.email;
                     if (tokenEmail === queryEmail) {
-                        userBookingCollection.find({email: queryEmail})
-                            .toArray( (err,documents) => {
+                        userBookingCollection.find({ email: queryEmail })
+                            .toArray((err, documents) => {
                                 res.status(200).send(documents);
-                                
+
                             })
                     }
-                    else{
+                    else {
                         res.status(401).send('Un-Authorized Access!!')
                     }
                 }).catch(function (error) {
                     res.status(401).send('Un-Authorized Access!!')
                 });
         }
-        else{
+        else {
             res.status(401).send('Un-Authorized Access!!')
         }
     })
 
 
-    
+
     // get all bookings and user
     app.get('/allbooking', (req, res) => {
         userBookingCollection.find({})
-            .toArray( (err,documents) => {
-            res.status(200).send(documents);
-        })    
+            .toArray((err, documents) => {
+                res.status(200).send(documents);
+            })
     })
 
 })
-
 
 
 app.listen(process.env.PORT || port);
