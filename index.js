@@ -25,6 +25,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const port = 3470;
 
+app.get('/', (req, res) => {
+    res.send('hello');
+})
+
 client.connect(err => {
     const apartmentCollection = client.db("apartmentHunt").collection("apartment");
     const serviceCollection = client.db("apartmentHunt").collection('service');
