@@ -45,9 +45,9 @@ client.connect(err => {
             })
     })
 
-    app.get('/getApartment', (req, res) => {
-        const houseId = req.query._id;
-        userBookingCollection.find({ _id: houseId })
+    app.get('/getApartment/:id', (req, res) => {
+        const houseId = req.params.id;
+        apartmentCollection.find({ _id: ObjectId(`${houseId}`) })
             .toArray((err, documents) => {
                 res.status(200).send(documents);
 
