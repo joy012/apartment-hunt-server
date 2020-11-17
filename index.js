@@ -45,14 +45,6 @@ client.connect(err => {
             })
     })
 
-    app.get('/getApartment/:id', (req, res) => {
-        apartmentCollection.find({ service: req.params.houseName })
-            .toArray((err, documents) => {
-                res.status(200).send(documents[0]);
-
-            })
-    })
-
 
     app.post('/addApartment', (req, res) => {
         console.log(req)
