@@ -25,7 +25,7 @@ app.use(fileUpload())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const port = 3470;
+const port = 3273;
 
 app.get('/', (req, res) => {
     res.send('hello world');
@@ -46,10 +46,9 @@ client.connect(err => {
     })
 
     app.get('/getApartment/:id', (req, res) => {
-        const houseId = req.params.id;
-        apartmentCollection.find({ _id: ObjectId(`${houseId}`) })
+        apartmentCollection.find({ service: req.params.houseName })
             .toArray((err, documents) => {
-                res.status(200).send(documents);
+                res.status(200).send(documents[0]);
 
             })
     })
