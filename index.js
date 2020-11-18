@@ -45,6 +45,13 @@ client.connect(err => {
             })
     })
 
+    app.get('/getapartment/:id', (req, res) => {
+        apartmentCollection.find({_id: ObjectId(req.params.id)})
+            .toArray((err, documents) => {
+                res.send(documents[0]);
+            })
+    })
+
 
     app.post('/addApartment', (req, res) => {
         const file = req.files.file;
@@ -88,7 +95,9 @@ client.connect(err => {
         const email = req.body.email;
         const message = req.body.meassage;
         const phone = req.body.phone;
-            userBookingCollection.insertOne({ name, email, message, phone})
+        const service = req.body.service;
+        const price = req.body.price;
+            userBookingCollection.insertOne({ name, email, message, phone, service, price})
                 .then(result => {
                         res.send(result.insertedCount > 0)
                     })
