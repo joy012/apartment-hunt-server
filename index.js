@@ -46,7 +46,7 @@ client.connect(err => {
     })
 
     app.get('/getapartment/:id', (req, res) => {
-        apartmentCollection.find({_id: ObjectId(req.params.id)})
+        apartmentCollection.find({_id: ObjectId(`${req.params.id}`)})
             .toArray((err, documents) => {
                 res.send(documents[0]);
             })
